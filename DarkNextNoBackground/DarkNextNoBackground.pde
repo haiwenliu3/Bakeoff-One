@@ -135,7 +135,7 @@ void drawButton(int i)
   Rectangle bounds = getButtonLocation(i);
 
   if (trials.get(trialNum) == i) // see if current button is the target
-    fill(0, 255, 255); // if so, fill cyan
+    fill(255,105,180); // if so, fill hotpink
     
   else if (trialNum != trials.size() - 1 && trials.get(trialNum+1) == i)
     fill(50,50,50);
