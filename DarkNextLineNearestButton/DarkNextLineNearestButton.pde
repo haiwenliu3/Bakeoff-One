@@ -18,6 +18,8 @@ int hits = 0; //number of successful clicks
 int misses = 0; //number of missed clicks
 Robot robot; //initalized in setup 
 
+boolean hit = false;
+
 int numRepeats = 1; //sets the number of times each button repeats in the test
 
 void setup()
@@ -80,10 +82,33 @@ void draw()
 
   fill(255, 0, 0, 200); // set fill color to translucent red
   ellipse(mouseX, mouseY, 20, 20); //draw user cursor as a circle with a diameter of 20
+  
+  Rectangle bounds = getButtonLocation(trials.get(trialNum));
+  
+  stroke(255);  //draw a line from cursor to target
+  line(mouseX, mouseY, bounds.x + (bounds.width/2), bounds.y+(bounds.height/2));
 }
 
 void mousePressed() // test to see if hit was in target!
-{
+{  
+  
+  /*
+  Rectangle bounds1 = getButtonLocation(1);
+  Rectangle bounds2 = getButtonLocation(2);
+  
+  int dist = bounds2.x - bounds1.x;
+  
+  System.out.println("mouse location");
+  System.out.println(mouseX);
+  System.out.println(mouseY);
+  
+  System.out.println("distance calc");
+  System.out.println(bounds2.x);
+  System.out.println(bounds1.x);
+  
+  System.out.println(dist);
+  */
+  
   if (trialNum >= trials.size()) //if task is over, just return
     return;
 
@@ -98,20 +123,32 @@ void mousePressed() // test to see if hit was in target!
   }
 
   Rectangle bounds = getButtonLocation(trials.get(trialNum));
+  
+  /**
+   * counts as within bounds if nearest the correct button
+   * padding is 50 between buttons, so halfway between is 50/2 = 25
+  **/
+  int xLowerLimit = bounds.x - 25;
+  int xUpperLimit = bounds.x + bounds.width + 25;
+  
+  int yLowerLimit = bounds.y - 25;
+  int yUpperLimit = bounds.y + bounds.height + 25;
 
  //check to see if mouse cursor is inside button 
-  if ((mouseX > bounds.x && mouseX < bounds.x + bounds.width) && (mouseY > bounds.y && mouseY < bounds.y + bounds.height)) // test to see if hit was within bounds
+  if ((mouseX >= xLowerLimit && mouseX <= xUpperLimit) && (mouseY >= yLowerLimit && mouseY <= yUpperLimit)) // test to see if hit was within bounds
   {
     System.out.println("HIT! " + trialNum + " " + (millis() - startTime)); // success
-    hits++; 
+    hits++;
+    hit = true;
+    trialNum++; //Increment trial number
   } 
   else
   {
     System.out.println("MISSED! " + trialNum + " " + (millis() - startTime)); // fail
     misses++;
+    hit = false;
   }
 
-  trialNum++; //Increment trial number
 
   //in this example code, we move the mouse back to the middle
   //robot.mouseMove(width/2, (height)/2); //on click, move cursor to roughly center of window!
@@ -131,7 +168,11 @@ void drawButton(int i)
   Rectangle bounds = getButtonLocation(i);
 
   if (trials.get(trialNum) == i) // see if current button is the target
-    fill(0, 255, 255); // if so, fill cyan
+    fill(255,105,180); // if so, fill hotpink
+    
+  else if (trialNum != trials.size() - 1 && trials.get(trialNum+1) == i)
+    fill(50,50,50); //fill next button dark grey
+    
   else
     fill(200); // if not, fill gray
 
