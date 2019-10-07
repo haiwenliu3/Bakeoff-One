@@ -20,7 +20,7 @@ Robot robot; //initalized in setup
 
 boolean hit = false;
 
-int numRepeats = 2; //sets the number of times each button repeats in the test
+int numRepeats = 1; //sets the number of times each button repeats in the test
 
 void setup()
 {
@@ -90,24 +90,9 @@ void draw()
 }
 
 void mousePressed() // test to see if hit was in target!
-{  
+{ 
   
-  /*
-  Rectangle bounds1 = getButtonLocation(1);
-  Rectangle bounds2 = getButtonLocation(2);
-  
-  int dist = bounds2.x - bounds1.x;
-  
-  System.out.println("mouse location");
-  System.out.println(mouseX);
-  System.out.println(mouseY);
-  
-  System.out.println("distance calc");
-  System.out.println(bounds2.x);
-  System.out.println(bounds1.x);
-  
-  System.out.println(dist);
-  */
+  Rectangle boundsMid = getButtonLocation(6); //used to move cursor back to center
   
   if (trialNum >= trials.size()) //if task is over, just return
     return;
@@ -125,7 +110,7 @@ void mousePressed() // test to see if hit was in target!
   Rectangle bounds = getButtonLocation(trials.get(trialNum));
   
   /**
-   * counts as within bounds if nearest the correct button
+   * counts as within bounds if pressed nearest the correct button
    * padding is 50 between buttons, so halfway between is 50/2 = 25
   **/
   int xLowerLimit = bounds.x - 25;
@@ -141,6 +126,15 @@ void mousePressed() // test to see if hit was in target!
     hits++;
     hit = true;
     trialNum++; //Increment trial number
+    
+    
+    System.out.println(boundsMid.x-25);
+    System.out.println(boundsMid.y + 25);
+    System.out.println(mouseX);
+    System.out.println(mouseY);
+    
+    robot.mouseMove(900, 600); //on click, move cursor to roughly center of window!
+    
   } 
   else
   {
@@ -151,6 +145,8 @@ void mousePressed() // test to see if hit was in target!
 
 
   //in this example code, we move the mouse back to the middle
+  
+  
   //robot.mouseMove(width/2, (height)/2); //on click, move cursor to roughly center of window!
 }  
 
@@ -172,7 +168,7 @@ void drawButton(int i)
     
   else if (trialNum != trials.size() - 1 && trials.get(trialNum+1) == i)
     fill(50,50,50); //fill next button dark grey
-
+    
   else
     fill(200); // if not, fill gray
 
