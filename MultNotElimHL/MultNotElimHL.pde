@@ -144,8 +144,8 @@ void mousePressed() // test to see if hit was in target!
   } 
   else
   {
-    System.out.println("MISSED! " + trialNum + " " + (millis() - startTime)); // fail
-    misses++;
+    //System.out.println("MISSED! " + trialNum + " " + (millis() - startTime)); // fail
+    //misses++;
     hit = false;
   }
 
