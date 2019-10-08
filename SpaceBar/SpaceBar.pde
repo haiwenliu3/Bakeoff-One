@@ -197,9 +197,6 @@ void keyPressed()
   //https://processing.org/reference/keyTyped_.html
   //https://processing.org/reference/keyCode.html
   
-  int mouseXLoc = mouseX;
-  int mouseYLoc = mouseY;
-  
   if (trialNum >= trials.size()) //if task is over, just return
     return;
 
@@ -226,7 +223,7 @@ void keyPressed()
   int yUpperLimit = bounds.y + bounds.height + 25;
 
  //check to see if mouse cursor is inside button 
-  if ((mouseXLoc >= xLowerLimit && mouseXLoc <= xUpperLimit) && (mouseYLoc >= yLowerLimit && mouseYLoc <= yUpperLimit)) // test to see if hit was within bounds
+  if ((mouseX >= xLowerLimit && mouseX <= xUpperLimit) && (mouseY >= yLowerLimit && mouseY <= yUpperLimit)) // test to see if hit was within bounds
   {
     System.out.println("HIT! " + trialNum + " " + (millis() - startTime)); // success
     hits++;
@@ -246,8 +243,13 @@ void checkBounds()
     else
       {
         Rectangle bounds = getButtonLocation(i);
+        
+        int xLowerLimit = bounds.x - 25;
+        int xUpperLimit = bounds.x + bounds.width + 25;
+        int yLowerLimit = bounds.y - 25;
+        int yUpperLimit = bounds.y + bounds.height + 25;
   
-        if ((mouseX >= bounds.x && mouseX <= bounds.x + bounds.width) && (mouseY >= bounds.y && mouseY <= bounds.y + bounds.height))
+        if ((mouseX >= xLowerLimit && mouseX <= xUpperLimit) && (mouseY >= yLowerLimit && mouseY <= yUpperLimit)) // test to see if hit was not within bounds
         {
           System.out.println("MISSED! " + trialNum + " " + (millis() - startTime)); // fail
           misses++;
