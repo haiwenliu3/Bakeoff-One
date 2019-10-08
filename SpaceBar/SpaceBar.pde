@@ -158,8 +158,14 @@ void keyPressed()
   //https://processing.org/reference/keyTyped_.html
   //https://processing.org/reference/keyCode.html
   
-  int mouseXLoc = mouseX
-  int mouseYLoc = mouseY
+  thread("targetHit");
+
+}
+
+void targetHit()
+{
+  int mouseXLoc = mouseX;
+  int mouseYLoc = mouseY;
   
   if (trialNum >= trials.size()) //if task is over, just return
     return;
@@ -200,5 +206,4 @@ void keyPressed()
     //misses++;
     hit = false;
   }
-
 }
