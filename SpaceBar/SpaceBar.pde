@@ -108,7 +108,46 @@ void mousePressed() // test to see if hit was in target!
   
   System.out.println(dist);
   */
+    int mouseXLoc = mouseX;
+  int mouseYLoc = mouseY;
   
+  if (trialNum >= trials.size()) //if task is over, just return
+    return;
+
+  if (trialNum == 0) //check if first click, if so, start timer
+    startTime = millis();
+
+  if (trialNum == trials.size() - 1) //check if final click
+  {
+    finishTime = millis();
+    //write to terminal some output. Useful for debugging too.
+    println("we're done!");
+  }
+
+  Rectangle bounds = getButtonLocation(trials.get(trialNum));
+  
+  /**
+   * counts as within bounds if nearest the correct button
+   * padding is 50 between buttons, so halfway between is 50/2 = 25
+  **/
+  int xLowerLimit = bounds.x - 25;
+  int xUpperLimit = bounds.x + bounds.width + 25;
+  
+  int yLowerLimit = bounds.y - 25;
+  int yUpperLimit = bounds.y + bounds.height + 25;
+
+ //check to see if mouse cursor is inside button 
+  if ((mouseXLoc >= xLowerLimit && mouseXLoc <= xUpperLimit) && (mouseYLoc >= yLowerLimit && mouseYLoc <= yUpperLimit)) // test to see if hit was within bounds
+  {
+    System.out.println("HIT! " + trialNum + " " + (millis() - startTime)); // success
+    hits++;
+    hit = true;
+    trialNum++; //Increment trial number
+  } 
+  else
+  {
+    thread("checkBounds");
+  }
 
 
   //in this example code, we move the mouse back to the middle
@@ -196,9 +235,25 @@ void keyPressed()
   } 
   else
   {
-    //System.out.println("MISSED! " + trialNum + " " + (millis() - startTime)); // fail
-    //misses++;
-    hit = false;
+    thread("checkBounds");
+  }
+}
+
+void checkBounds()
+{
+  for (int i = 0; i < 16; i++) {
+    if (i == trials.get(trialNum)) continue;
+    else
+      {
+        Rectangle bounds = getButtonLocation(i);
+  
+        if ((mouseX >= bounds.x && mouseX <= bounds.x + bounds.width) && (mouseY >= bounds.y && mouseY <= bounds.y + bounds.height))
+        {
+          System.out.println("MISSED! " + trialNum + " " + (millis() - startTime)); // fail
+          misses++;
+          hit = false;
+        }
+      }
   }
 
 }
