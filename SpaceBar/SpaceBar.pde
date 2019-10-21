@@ -20,7 +20,12 @@ Robot robot; //initalized in setup
 
 boolean hit = false;
 
-int numRepeats = 2; //sets the number of times each button repeats in the test
+Table table;
+int participantID = 1;
+int trialTime = 0;
+TableRow newRow;
+
+int numRepeats = 20; //sets the number of times each button repeats in the test
 
 void setup()
 {
@@ -51,6 +56,30 @@ void setup()
   System.out.println("trial order: " + trials);
   
   frame.setLocation(0,0); // put window in top left corner of screen (doesn't always work)
+  
+  table = new Table();
+  table.addColumn("Trial");
+  table.addColumn("Participant ID");
+  table.addColumn("Cursor X");
+  table.addColumn("Cursor Y");
+  table.addColumn("Target X");
+  table.addColumn("Target Y");
+  table.addColumn("Target Width");
+  table.addColumn("Time");
+  table.addColumn("Hit Target");
+  
+  
+  newRow = table.addRow();
+  
+  Rectangle nextBounds = getButtonLocation(trials.get(trialNum));
+  
+  newRow.setInt("Trial", trialNum);
+  newRow.setInt("Participant ID", participantID);
+  newRow.setInt("Cursor X", mouseX);
+  newRow.setInt("Cursor Y", mouseY);
+  newRow.setInt("Target X", nextBounds.x + (nextBounds.width)/2);
+  newRow.setInt("Target Y", nextBounds.y + (nextBounds.height)/2);
+  newRow.setInt("Target Width", 40);
 }
 
 
@@ -71,6 +100,8 @@ void draw()
     text("Total time taken: " + timeTaken + " sec", width / 2, height / 2 + 80);
     text("Average time for each button: " + nf((timeTaken)/(float)(hits+misses),0,3) + " sec", width / 2, height / 2 + 100);
     text("Average time for each button + penalty: " + nf(((timeTaken)/(float)(hits+misses) + penalty),0,3) + " sec", width / 2, height / 2 + 140);
+    
+    saveTable(table, String.format("Participant%d.csv", participantID));
     return; //return, nothing else to do now test is over
   }
 
@@ -92,66 +123,6 @@ void draw()
 void mousePressed() // test to see if hit was in target!
 {  
   
-  /*
-  Rectangle bounds1 = getButtonLocation(1);
-  Rectangle bounds2 = getButtonLocation(2);
-  
-  int dist = bounds2.x - bounds1.x;
-  
-  System.out.println("mouse location");
-  System.out.println(mouseX);
-  System.out.println(mouseY);
-  
-  System.out.println("distance calc");
-  System.out.println(bounds2.x);
-  System.out.println(bounds1.x);
-  
-  System.out.println(dist);
-  */
-    int mouseXLoc = mouseX;
-  int mouseYLoc = mouseY;
-  
-  if (trialNum >= trials.size()) //if task is over, just return
-    return;
-
-  if (trialNum == 0) //check if first click, if so, start timer
-    startTime = millis();
-
-  if (trialNum == trials.size() - 1) //check if final click
-  {
-    finishTime = millis();
-    //write to terminal some output. Useful for debugging too.
-    println("we're done!");
-  }
-
-  Rectangle bounds = getButtonLocation(trials.get(trialNum));
-  
-  /**
-   * counts as within bounds if nearest the correct button
-   * padding is 50 between buttons, so halfway between is 50/2 = 25
-  **/
-  int xLowerLimit = bounds.x - 25;
-  int xUpperLimit = bounds.x + bounds.width + 25;
-  
-  int yLowerLimit = bounds.y - 25;
-  int yUpperLimit = bounds.y + bounds.height + 25;
-
- //check to see if mouse cursor is inside button 
-  if ((mouseXLoc >= xLowerLimit && mouseXLoc <= xUpperLimit) && (mouseYLoc >= yLowerLimit && mouseYLoc <= yUpperLimit)) // test to see if hit was within bounds
-  {
-    System.out.println("HIT! " + trialNum + " " + (millis() - startTime)); // success
-    hits++;
-    hit = true;
-    trialNum++; //Increment trial number
-  } 
-  else
-  {
-    thread("checkBounds");
-  }
-
-
-  //in this example code, we move the mouse back to the middle
-  //robot.mouseMove(width/2, (height)/2); //on click, move cursor to roughly center of window!
 }  
 
 //probably shouldn't have to edit this method
@@ -196,6 +167,7 @@ void keyPressed()
   //can use the keyboard if you wish
   //https://processing.org/reference/keyTyped_.html
   //https://processing.org/reference/keyCode.html
+  newRow.setInt("Time", (millis()-trialTime));
   
   if (trialNum >= trials.size()) //if task is over, just return
     return;
@@ -225,10 +197,31 @@ void keyPressed()
  //check to see if mouse cursor is inside button 
   if ((mouseX >= xLowerLimit && mouseX <= xUpperLimit) && (mouseY >= yLowerLimit && mouseY <= yUpperLimit)) // test to see if hit was within bounds
   {
+    newRow.setInt("Hit Target", 1);
     System.out.println("HIT! " + trialNum + " " + (millis() - startTime)); // success
     hits++;
     hit = true;
     trialNum++; //Increment trial number
+    
+    if (trialNum == (numRepeats * 16)) 
+      return;
+    
+    newRow = table.addRow();
+  
+    Rectangle nextBounds = getButtonLocation(trials.get(trialNum));
+
+  
+    newRow.setInt("Trial", trialNum);
+    newRow.setInt("Participant ID", participantID);
+    newRow.setInt("Cursor X", mouseX);
+    newRow.setInt("Cursor Y", mouseY);
+    newRow.setInt("Target X", nextBounds.x + (nextBounds.width)/2);
+    newRow.setInt("Target Y", nextBounds.y + (nextBounds.height)/2);
+    newRow.setInt("Target Width", 40);
+    
+    trialTime = millis();
+
+  
   } 
   else
   {
@@ -251,9 +244,27 @@ void checkBounds()
   
         if ((mouseX >= xLowerLimit && mouseX <= xUpperLimit) && (mouseY >= yLowerLimit && mouseY <= yUpperLimit)) // test to see if hit was not within bounds
         {
+          newRow.setInt("Hit Target", 0);
           System.out.println("MISSED! " + trialNum + " " + (millis() - startTime)); // fail
           misses++;
           hit = false;
+          
+          if (trialNum == (numRepeats * 16))
+            return;
+          
+          newRow = table.addRow();
+  
+          Rectangle nextBounds = getButtonLocation(trials.get(trialNum));
+  
+          newRow.setInt("Trial", trialNum);
+          newRow.setInt("Participant ID", participantID);
+          newRow.setInt("Cursor X", mouseX);
+          newRow.setInt("Cursor Y", mouseY);
+          newRow.setInt("Target X", nextBounds.x + (nextBounds.width)/2);
+          newRow.setInt("Target Y", nextBounds.y + (nextBounds.height)/2);
+          newRow.setInt("Target Width", 40);
+    
+          trialTime = millis();
         }
       }
   }
