@@ -25,7 +25,7 @@ int participantID = 1;
 int trialTime = 0;
 TableRow newRow;
 
-int numRepeats = 20; //sets the number of times each button repeats in the test
+int numRepeats = 1; //sets the number of times each button repeats in the test
 
 void setup()
 {
@@ -65,6 +65,7 @@ void setup()
   table.addColumn("Target X");
   table.addColumn("Target Y");
   table.addColumn("Target Width");
+  table.addColumn("Distance");
   table.addColumn("Time");
   table.addColumn("Hit Target");
   
@@ -73,13 +74,22 @@ void setup()
   
   Rectangle nextBounds = getButtonLocation(trials.get(trialNum));
   
+  int nextX = nextBounds.x + (nextBounds.width)/2;
+  int nextY = nextBounds.y + (nextBounds.height)/2;
+  
+  int mX = mouseX;
+  int mY = mouseY;
+  
   newRow.setInt("Trial", trialNum);
   newRow.setInt("Participant ID", participantID);
-  newRow.setInt("Cursor X", mouseX);
-  newRow.setInt("Cursor Y", mouseY);
-  newRow.setInt("Target X", nextBounds.x + (nextBounds.width)/2);
-  newRow.setInt("Target Y", nextBounds.y + (nextBounds.height)/2);
+  newRow.setInt("Cursor X", mX);
+  newRow.setInt("Cursor Y", mY);
+  newRow.setInt("Target X", nextX);
+  newRow.setInt("Target Y", nextY);
   newRow.setInt("Target Width", 40);
+  
+  float distance = sqrt(sq(nextX - mX) + sq(nextY - mY));
+  newRow.setFloat("Distance", distance);
 }
 
 
@@ -210,14 +220,22 @@ void keyPressed()
   
     Rectangle nextBounds = getButtonLocation(trials.get(trialNum));
 
+    int nextX = nextBounds.x + (nextBounds.width)/2;
+    int nextY = nextBounds.y + (nextBounds.height)/2;
+  
+    int mX = mouseX;
+    int mY = mouseY;
   
     newRow.setInt("Trial", trialNum);
     newRow.setInt("Participant ID", participantID);
-    newRow.setInt("Cursor X", mouseX);
-    newRow.setInt("Cursor Y", mouseY);
-    newRow.setInt("Target X", nextBounds.x + (nextBounds.width)/2);
-    newRow.setInt("Target Y", nextBounds.y + (nextBounds.height)/2);
+    newRow.setInt("Cursor X", mX);
+    newRow.setInt("Cursor Y", mY);
+    newRow.setInt("Target X", nextX);
+    newRow.setInt("Target Y", nextY);
     newRow.setInt("Target Width", 40);
+    
+    float distance = sqrt(sq(nextX - mX) + sq(nextY - mY));
+    newRow.setFloat("Distance", distance);
     
     trialTime = millis();
 
@@ -256,13 +274,21 @@ void checkBounds()
   
           Rectangle nextBounds = getButtonLocation(trials.get(trialNum));
   
+          int nextX = nextBounds.x + (nextBounds.width)/2;
+          int nextY = nextBounds.y + (nextBounds.height)/2;
+  
+          int mX = mouseX;
+          int mY = mouseY;
           newRow.setInt("Trial", trialNum);
           newRow.setInt("Participant ID", participantID);
-          newRow.setInt("Cursor X", mouseX);
-          newRow.setInt("Cursor Y", mouseY);
-          newRow.setInt("Target X", nextBounds.x + (nextBounds.width)/2);
-          newRow.setInt("Target Y", nextBounds.y + (nextBounds.height)/2);
+          newRow.setInt("Cursor X", mX);
+          newRow.setInt("Cursor Y", mY);
+          newRow.setInt("Target X", nextX);
+          newRow.setInt("Target Y", nextY);
           newRow.setInt("Target Width", 40);
+          
+          float distance = sqrt(sq(nextX - mX) + sq(nextY - mY));
+          newRow.setFloat("Distance", distance);
     
           trialTime = millis();
         }
